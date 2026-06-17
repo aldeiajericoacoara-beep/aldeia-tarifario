@@ -1238,7 +1238,13 @@ export default function Home() {
                                 <SeasonSel val={row.sid} seasons={seasons} onSave={(v) => updArr(setSeasonRanges, gi, "sid", v)} />
                               </TD>
                               <TD light>
-                                <EC val={row.label} onSave={(v) => updArr(setSeasonRanges, gi, "label", v)} wide />
+                                <EC
+                                  val={row.label}
+                                  display={row.label || "Adicionar descrição"}
+                                  onSave={(v) => updArr(setSeasonRanges, gi, "label", v)}
+                                  wide
+                                  color={row.label ? "#57534e" : "#a8a29e"}
+                                />
                               </TD>
                               <TD>
                                 <BtnDel onClick={() => delArr(setSeasonRanges, gi)} />
@@ -1264,7 +1270,13 @@ export default function Home() {
                         <div key={gi} className="flex gap-3 items-center px-4 py-3 border border-stone-200 rounded-xl bg-stone-50/30 shadow-sm">
                           <DateEC val={row.date} onSave={(v) => updArr(setHolidays, gi, "date", v)} hint={T.dateHint} />
                           <div className="flex-1">
-                            <EC val={row.label} onSave={(v) => updArr(setHolidays, gi, "label", v)} wide color="#2D221E" />
+                            <EC
+                              val={row.label}
+                              display={row.label || "Adicionar descrição"}
+                              onSave={(v) => updArr(setHolidays, gi, "label", v)}
+                              wide
+                              color={row.label ? "#2D221E" : "#a8a29e"}
+                            />
                           </div>
                           <BtnDel onClick={() => delArr(setHolidays, gi)} />
                         </div>
