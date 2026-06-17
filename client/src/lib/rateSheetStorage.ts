@@ -1,4 +1,6 @@
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || "")
+  .replace(/\/rest\/v1\/?$/, "")
+  .replace(/\/+$/, "");
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const STATE_KEY = "rate-sheet";
 
@@ -103,4 +105,3 @@ export function loadRateSheetData() {
 export function saveRateSheetData(data: unknown) {
   return hasSupabase ? saveToSupabase(data) : saveToLocalApi(data);
 }
-
