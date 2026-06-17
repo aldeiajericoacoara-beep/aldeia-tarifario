@@ -4,6 +4,7 @@ import {
   BookOpen, Palette, Percent, Info, AlertTriangle, Moon, CreditCard, 
   CalendarX, Home as HomeIcon, DollarSign, Ban, ChevronUp, ChevronDown, Trash, Plus
 } from "lucide-react";
+import { loadRateSheetData, saveRateSheetData } from "@/lib/rateSheetStorage";
 
 // Estilos de Paleta baseados na Abordagem 1: "Organic Sanctuary"
 const PAL = {
@@ -732,10 +733,7 @@ export default function Home() {
 
     const loadData = async () => {
       try {
-        const res = await fetch("/api/rate-sheet");
-        if (!res.ok) throw new Error(`Erro ${res.status} ao carregar banco`);
-
-        const body = await res.json() as { data?: RateSheetData | null };
+        const body = await loadRateSheetData() as { data?: RateSheetData | null };
         if (active && body.data) {
           applyData(body.data);
         } else if (active) {
@@ -772,13 +770,8 @@ export default function Home() {
     const t = setTimeout(() => {
       const payload = buildPayload();
 
-      fetch("/api/rate-sheet", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error(`Erro ${res.status} ao salvar banco`);
+      saveRateSheetData(payload)
+        .then(() => {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
           setSaved(true);
         })
