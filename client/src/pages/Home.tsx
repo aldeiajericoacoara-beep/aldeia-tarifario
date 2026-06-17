@@ -316,6 +316,19 @@ const INIT = {
     { date: "2027-12-25", label: "Natal" },
     { date: "2027-12-26", label: "Réveillon" }, { date: "2027-12-31", label: "Véspera do Ano Novo" },
   ],
+  discountRules: [
+    { level: "0–5%", authorizer: "Daniele / Equipe Comercial", situation: "Incentivo direto / conversão PIX", groups: "Todos", danger: false },
+    { level: "5–10%", authorizer: "Aprovação Débora", situation: "Ajuste competitivo / última hora", groups: "Todos", danger: false },
+    { level: "10–15%", authorizer: "Gestão (Débora + CB)", situation: "Baixa ocupação / parceria estratégica", groups: "B, C, D", danger: false },
+    { level: "15–20%", authorizer: "Gestão (Débora + CB)", situation: "Friends & Family", groups: "Restrito", danger: false },
+    { level: ">20%", authorizer: "NÃO PERMITIDO", situation: "CB ou Promo Fique 3=Pague 2", groups: "Via CB", danger: true },
+  ],
+  noDiscountRules: [
+    "Alta temporada e PIC (Jul–Ago, feriados, NYE)",
+    "NET resultante abaixo do piso absoluto",
+    "Calculados sobre o preço OTA — sempre usar o NET",
+    "Sem autorização do nível correspondente",
+  ],
 };
 
 const STORAGE_KEY = "aldeia-v7";
@@ -331,6 +344,8 @@ type RateSheetData = {
   privRules?: typeof INIT.privRules;
   seasonRanges?: typeof INIT.seasonRanges;
   holidays?: typeof INIT.holidays;
+  discountRules?: typeof INIT.discountRules;
+  noDiscountRules?: typeof INIT.noDiscountRules;
   lang?: "pt" | "en";
 };
 
@@ -706,6 +721,8 @@ export default function Home() {
   const [privRules, setPrivRules] = useState(INIT.privRules);
   const [seasonRanges, setSeasonRanges] = useState(INIT.seasonRanges);
   const [holidays, setHolidays] = useState(INIT.holidays);
+  const [discountRules, setDiscountRules] = useState(INIT.discountRules);
+  const [noDiscountRules, setNoDiscountRules] = useState(INIT.noDiscountRules);
   const [tab, setTab] = useState("rates");
   const [calYear, setCalYear] = useState(2026);
   const [calView, setCalView] = useState("visual");
@@ -728,6 +745,8 @@ export default function Home() {
     if (d.privRules) setPrivRules(d.privRules);
     if (d.seasonRanges) setSeasonRanges(d.seasonRanges);
     if (d.holidays) setHolidays(d.holidays);
+    if (d.discountRules) setDiscountRules(d.discountRules);
+    if (d.noDiscountRules) setNoDiscountRules(d.noDiscountRules);
     if (d.lang) setLang(d.lang);
   };
 
@@ -737,7 +756,7 @@ export default function Home() {
   };
 
   const buildPayload = () => ({
-    seasons, channels, units, calendar, minStay, payments, gaps, privRules, seasonRanges, holidays, lang
+    seasons, channels, units, calendar, minStay, payments, gaps, privRules, seasonRanges, holidays, discountRules, noDiscountRules, lang
   });
 
   // Carregar dados salvos no banco, com fallback para o backup local antigo
@@ -793,7 +812,7 @@ export default function Home() {
         });
     }, 900);
     return () => clearTimeout(t);
-  }, [loaded, seasons, channels, units, calendar, minStay, payments, gaps, privRules, seasonRanges, holidays, lang]);
+  }, [loaded, seasons, channels, units, calendar, minStay, payments, gaps, privRules, seasonRanges, holidays, discountRules, noDiscountRules, lang]);
 
   const gs = (id: string) => {
     const s = seasons.find((x) => x.id === id) || INIT.seasons[0];
@@ -822,6 +841,10 @@ export default function Home() {
 
   const updArr = (setter: any, i: number, field: string, val: any) => {
     setter((arr: any[]) => arr.map((r, idx) => idx !== i ? r : { ...r, [field]: val }));
+  };
+
+  const updScalarArr = (setter: any, i: number, val: any) => {
+    setter((arr: any[]) => arr.map((r, idx) => idx !== i ? r : val));
   };
 
   const delArr = (setter: any, i: number) => {
@@ -919,6 +942,8 @@ export default function Home() {
                     setPrivRules(INIT.privRules);
                     setSeasonRanges(INIT.seasonRanges);
                     setHolidays(INIT.holidays);
+                    setDiscountRules(INIT.discountRules);
+                    setNoDiscountRules(INIT.noDiscountRules);
                     setConfirmReset(false);
                   }}
                   className="text-xs text-white bg-red-600 hover:bg-red-700 font-bold px-3 py-1.5 rounded-lg transition-colors"
@@ -1640,8 +1665,42 @@ export default function Home() {
               <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
               <span className="font-medium">{T.discAlert}</span>
             </div>
-            
+
             <div className="border border-stone-200 rounded-xl overflow-hidden bg-white shadow-sm">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-stone-50/50">
+                    <th className="px-5 py-3 text-[10px] font-semibold text-stone-500 uppercase tracking-wider text-left border-b border-stone-200">{T.levelCol}</th>
+                    <th className="px-5 py-3 text-[10px] font-semibold text-stone-500 uppercase tracking-wider text-left border-b border-stone-200">{T.authCol}</th>
+                    <th className="px-5 py-3 text-[10px] font-semibold text-stone-500 uppercase tracking-wider text-left border-b border-stone-200">{T.sitCol}</th>
+                    <th className="px-5 py-3 text-[10px] font-semibold text-stone-500 uppercase tracking-wider text-right border-b border-stone-200">{T.grpCol}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {discountRules.map((row, i) => {
+                    const d = row.danger;
+                    return (
+                      <tr key={i} className={d ? "bg-red-50/40" : i % 2 ? "bg-stone-50/40" : "bg-white"}>
+                        <td className={`px-5 py-3.5 border-b border-stone-100 font-bold text-xs md:text-sm ${d ? "text-red-700" : "text-stone-800"}`}>
+                          <EC val={row.level} onSave={(v) => updArr(setDiscountRules, i, "level", v)} bold color={d ? "#b91c1c" : "#292524"} />
+                        </td>
+                        <td className={`px-5 py-3.5 border-b border-stone-100 text-xs md:text-sm ${d ? "text-red-600 font-semibold" : "text-stone-700"}`}>
+                          <EC val={row.authorizer} onSave={(v) => updArr(setDiscountRules, i, "authorizer", v)} wide bold={d} color={d ? "#dc2626" : "#44403c"} />
+                        </td>
+                        <td className="px-5 py-3.5 border-b border-stone-100 text-xs text-stone-500">
+                          <EC val={row.situation} onSave={(v) => updArr(setDiscountRules, i, "situation", v)} wide color="#57534e" />
+                        </td>
+                        <td className="px-5 py-3.5 border-b border-stone-100 text-xs text-stone-500 text-right">
+                          <EC val={row.groups} onSave={(v) => updArr(setDiscountRules, i, "groups", v)} right color="#57534e" />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            
+            <div className="hidden border border-stone-200 rounded-xl overflow-hidden bg-white shadow-sm">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-stone-50/50">
@@ -1674,6 +1733,23 @@ export default function Home() {
             </div>
 
             <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-5">
+              <p className="text-xs md:text-sm font-bold text-stone-800 mb-3 flex items-center gap-2">
+                <Ban className="w-4 h-4 text-red-600" />
+                {T.noDiscTitle}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {noDiscountRules.map((txt, i) => (
+                  <div key={i} className="flex gap-2.5 items-start bg-white/50 border border-stone-200/50 rounded-lg p-3">
+                    <span className="text-red-600 font-bold text-sm leading-none">•</span>
+                    <span className="text-xs text-stone-600 leading-relaxed">
+                      <EC val={txt} onSave={(v) => updScalarArr(setNoDiscountRules, i, v)} wide color="#57534e" />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="hidden bg-stone-100/60 border border-stone-200 rounded-xl p-5">
               <p className="text-xs md:text-sm font-bold text-stone-800 mb-3 flex items-center gap-2">
                 <Ban className="w-4 h-4 text-red-600" />
                 {T.noDiscTitle}
