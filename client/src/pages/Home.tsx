@@ -4,6 +4,8 @@ import {
   BookOpen, Palette, Percent, Info, AlertTriangle, Moon, CreditCard, 
   CalendarX, Home as HomeIcon, DollarSign, Ban, ChevronUp, ChevronDown, Trash, Plus
 } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { loadRateSheetData, saveRateSheetData } from "@/lib/rateSheetStorage";
 
 // Estilos de Paleta baseados na Abordagem 1: "Organic Sanctuary"
@@ -396,6 +398,17 @@ const isoToDisp = (iso: string) => {
   if (!iso || iso.length < 10) return iso;
   return iso.slice(8, 10) + "/" + iso.slice(5, 7) + "/" + iso.slice(2, 4);
 };
+const isoToDate = (iso: string) => {
+  if (!iso || iso.length < 10) return undefined;
+  const y = Number(iso.slice(0, 4));
+  const m = Number(iso.slice(5, 7));
+  const d = Number(iso.slice(8, 10));
+  if (!y || !m || !d) return undefined;
+  return new Date(y, m - 1, d);
+};
+const dateToIso = (date: Date) => {
+  return date.getFullYear() + "-" + p2(date.getMonth() + 1) + "-" + p2(date.getDate());
+};
 const dispToIso = (disp: string) => {
   const p = disp.trim().split("/");
   if (p.length < 3) return disp;
@@ -462,37 +475,37 @@ interface DateECProps {
 }
 
 function DateEC({ val, onSave, hint }: DateECProps) {
-  const [ed, setEd] = useState(false);
-  const [v, setV] = useState("");
-  
-  const save = () => {
-    onSave(dispToIso(v));
-    setEd(false);
-  };
-
-  if (ed) return (
-    <input 
-      autoFocus 
-      value={v} 
-      placeholder={hint || "DD/MM/AA"}
-      onChange={(e) => setV(e.target.value)} 
-      onBlur={save}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") save();
-        if (e.key === "Escape") setEd(false);
-      }}
-      className="w-24 text-xs px-2 py-1 border-2 border-emerald-600 rounded bg-white text-stone-900 outline-none shadow-inner"
-    />
-  );
+  const [open, setOpen] = useState(false);
+  const selectedDate = isoToDate(val);
 
   return (
-    <span 
-      onClick={() => { setEd(true); setV(isoToDisp(val)); }} 
-      title="Clique para editar"
-      className="cursor-pointer text-xs border-b border-dashed border-stone-300 hover:border-emerald-600 transition-colors"
-    >
-      {isoToDisp(val)}
-    </span>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          title="Clique para escolher a data"
+          className="inline-flex items-center gap-1.5 text-xs border-b border-dashed border-stone-300 hover:border-emerald-600 hover:text-emerald-700 transition-colors"
+        >
+          <CalendarIcon className="w-3 h-3 text-stone-400" />
+          {isoToDisp(val) || hint || "DD/MM/AA"}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-auto p-0 border-stone-200 shadow-xl">
+        <Calendar
+          mode="single"
+          selected={selectedDate}
+          defaultMonth={selectedDate || new Date()}
+          captionLayout="dropdown"
+          startMonth={new Date(2025, 0)}
+          endMonth={new Date(2028, 11)}
+          onSelect={(date) => {
+            if (!date) return;
+            onSave(dateToIso(date));
+            setOpen(false);
+          }}
+        />
+      </PopoverContent>
+    </Popover>
   );
 }
 
