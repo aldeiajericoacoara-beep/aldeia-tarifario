@@ -346,6 +346,7 @@ type RateSheetData = {
   holidays?: typeof INIT.holidays;
   discountRules?: typeof INIT.discountRules;
   noDiscountRules?: typeof INIT.noDiscountRules;
+  competitors?: typeof COMPETITORS;
   lang?: "pt" | "en";
 };
 
@@ -723,6 +724,7 @@ export default function Home() {
   const [holidays, setHolidays] = useState(INIT.holidays);
   const [discountRules, setDiscountRules] = useState(INIT.discountRules);
   const [noDiscountRules, setNoDiscountRules] = useState(INIT.noDiscountRules);
+  const [competitors, setCompetitors] = useState(COMPETITORS);
   const [tab, setTab] = useState("rates");
   const [calYear, setCalYear] = useState(2026);
   const [calView, setCalView] = useState("visual");
@@ -747,6 +749,7 @@ export default function Home() {
     if (d.holidays) setHolidays(d.holidays);
     if (d.discountRules) setDiscountRules(d.discountRules);
     if (d.noDiscountRules) setNoDiscountRules(d.noDiscountRules);
+    if (d.competitors) setCompetitors(d.competitors);
     if (d.lang) setLang(d.lang);
   };
 
@@ -756,7 +759,7 @@ export default function Home() {
   };
 
   const buildPayload = () => ({
-    seasons, channels, units, calendar, minStay, payments, gaps, privRules, seasonRanges, holidays, discountRules, noDiscountRules, lang
+    seasons, channels, units, calendar, minStay, payments, gaps, privRules, seasonRanges, holidays, discountRules, noDiscountRules, competitors, lang
   });
 
   // Carregar dados salvos no banco, com fallback para o backup local antigo
@@ -812,7 +815,7 @@ export default function Home() {
         });
     }, 900);
     return () => clearTimeout(t);
-  }, [loaded, seasons, channels, units, calendar, minStay, payments, gaps, privRules, seasonRanges, holidays, discountRules, noDiscountRules, lang]);
+  }, [loaded, seasons, channels, units, calendar, minStay, payments, gaps, privRules, seasonRanges, holidays, discountRules, noDiscountRules, competitors, lang]);
 
   const gs = (id: string) => {
     const s = seasons.find((x) => x.id === id) || INIT.seasons[0];
@@ -944,6 +947,7 @@ export default function Home() {
                     setHolidays(INIT.holidays);
                     setDiscountRules(INIT.discountRules);
                     setNoDiscountRules(INIT.noDiscountRules);
+                    setCompetitors(COMPETITORS);
                     setConfirmReset(false);
                   }}
                   className="text-xs text-white bg-red-600 hover:bg-red-700 font-bold px-3 py-1.5 rounded-lg transition-colors"
@@ -1115,7 +1119,7 @@ export default function Home() {
               </div>
             </div>
             
-            {Object.entries(COMPETITORS).map(([gid, comp]) => (
+            {Object.entries(competitors).map(([gid, comp]) => (
               <div key={gid} className="border border-stone-200 rounded-xl overflow-hidden bg-white shadow-sm">
                 <div className="flex items-center gap-3 px-5 py-3.5 bg-stone-50 border-b border-stone-200">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ background: GROUPS[gid as keyof typeof GROUPS].color }} />
