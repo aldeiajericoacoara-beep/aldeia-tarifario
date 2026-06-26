@@ -1,4 +1,75 @@
-import { loadState, requireAgentAuth, saveState, sendError } from "./_state";
+const STATE_KEY = "rate-sheet";
+
+type AppState = Record<string, any>;
+
+function normalizeUrl(value: string) {
+  return value.replace(/\/rest\/v1\/?$/, "").replace(/\/+$/, "");
+}
+
+function getSupabaseConfig() {
+  const url = normalizeUrl(process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "");
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || "";
+  if (!url || !key) throw new Error("SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY precisam estar configurados na Vercel.");
+  return { url, key };
+}
+
+function headers(key: string) {
+  return {
+    apikey: key,
+    Authorization: `Bearer ${key}`,
+    "Content-Type": "application/json",
+  };
+}
+
+function requireAgentAuth(req: any, res: any) {
+  const expected = process.env.AGENT_API_KEY || "";
+  if (!expected) {
+    res.status(500).json({ error: "AGENT_API_KEY nao configurada na Vercel." });
+    return false;
+  }
+
+  if (req.headers.authorization !== `Bearer ${expected}`) {
+    res.status(401).json({ error: "Nao autorizado." });
+    return false;
+  }
+
+  return true;
+}
+
+async function loadState(): Promise<AppState> {
+  const { url, key } = getSupabaseConfig();
+  const params = new URLSearchParams({ key: `eq.${STATE_KEY}`, select: "payload", limit: "1" });
+  const response = await fetch(`${url}/rest/v1/app_state?${params}`, { headers: headers(key) });
+
+  if (!response.ok) throw new Error(`Erro ${response.status} ao carregar estado.`);
+
+  const rows = await response.json() as Array<{ payload?: AppState }>;
+  return rows[0]?.payload || {};
+}
+
+async function saveState(payload: AppState) {
+  const { url, key } = getSupabaseConfig();
+  const response = await fetch(`${url}/rest/v1/app_state`, {
+    method: "POST",
+    headers: {
+      ...headers(key),
+      Prefer: "resolution=merge-duplicates,return=representation",
+    },
+    body: JSON.stringify({
+      key: STATE_KEY,
+      payload,
+      updated_at: new Date().toISOString(),
+    }),
+  });
+
+  if (!response.ok) throw new Error(`Erro ${response.status} ao salvar estado.`);
+  return payload;
+}
+
+function sendError(res: any, error: unknown) {
+  const message = error instanceof Error ? error.message : "Erro inesperado.";
+  res.status(500).json({ error: message });
+}
 
 function numberOrUndefined(value: unknown) {
   if (value === undefined) return undefined;
