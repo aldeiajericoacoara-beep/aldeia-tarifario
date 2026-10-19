@@ -402,6 +402,8 @@ const COMPETITORS = {
   },
 };
 
+type CompData = Record<string, { label: string; note: string; rows: { name: string; v: (number | null)[] }[] }>;
+
 const fmtR = (n: number) => "R$ " + Math.round(n).toLocaleString("pt-BR");
 const pubP = (net: number, comm: number, div?: number) => {
   if (comm >= 100) return 0;
@@ -724,7 +726,7 @@ export default function Home() {
   const [holidays, setHolidays] = useState(INIT.holidays);
   const [discountRules, setDiscountRules] = useState(INIT.discountRules);
   const [noDiscountRules, setNoDiscountRules] = useState(INIT.noDiscountRules);
-  const [competitors, setCompetitors] = useState(COMPETITORS);
+  const [competitors, setCompetitors] = useState<CompData>(COMPETITORS as CompData);
   const [tab, setTab] = useState("rates");
   const [calYear, setCalYear] = useState(2026);
   const [calView, setCalView] = useState("visual");
@@ -866,6 +868,31 @@ export default function Home() {
     );
   };
 
+  const updCompName = (gid: string, ri: number, name: string) => {
+    setCompetitors((c) => ({ ...c, [gid]: { ...c[gid], rows: c[gid].rows.map((r, i) => i !== ri ? r : { ...r, name }) } }));
+  };
+
+  const updCompVal = (gid: string, ri: number, mi: number, val: number) => {
+    setCompetitors((c) => ({
+      ...c,
+      [gid]: {
+        ...c[gid],
+        rows: c[gid].rows.map((r, i) => i !== ri ? r : { ...r, v: r.v.map((x, k) => k !== mi ? x : (val > 0 ? val : null)) })
+      }
+    }));
+  };
+
+  const addComp = (gid: string) => {
+    setCompetitors((c) => ({
+      ...c,
+      [gid]: { ...c[gid], rows: [...c[gid].rows, { name: lang === "pt" ? "Novo concorrente" : "New competitor", v: Array(10).fill(null) }] }
+    }));
+  };
+
+  const delComp = (gid: string, ri: number) => {
+    setCompetitors((c) => ({ ...c, [gid]: { ...c[gid], rows: c[gid].rows.filter((_, i) => i !== ri) } }));
+  };
+
   const cmpColor = (v: number, gid: string) => {
     const nets = units.filter((u) => u.g === gid).flatMap((u) => u.rows.map((r) => r.net));
     const avg = nets.length ? nets.reduce((a, b) => a + b, 0) / nets.length : v;
@@ -947,7 +974,7 @@ export default function Home() {
                     setHolidays(INIT.holidays);
                     setDiscountRules(INIT.discountRules);
                     setNoDiscountRules(INIT.noDiscountRules);
-                    setCompetitors(COMPETITORS);
+                    setCompetitors(COMPETITORS as CompData);
                     setConfirmReset(false);
                   }}
                   className="text-xs text-white bg-red-600 hover:bg-red-700 font-bold px-3 py-1.5 rounded-lg transition-colors"
@@ -1116,6 +1143,7 @@ export default function Home() {
               <div>
                 <p className="font-semibold">{T.compNote}</p>
                 <p className="text-blue-700/90 mt-0.5">{T.compLegend}</p>
+                <p className="text-blue-700/90 mt-0.5">{lang === "pt" ? "Clique em qualquer valor ou nome para editar. Deixe o valor vazio (ou 0) para mostrar —." : "Click any value or name to edit. Leave empty (or 0) to show —."}</p>
               </div>
             </div>
             
@@ -1136,27 +1164,43 @@ export default function Home() {
                         {T.compMonths.map((m: string) => (
                           <th key={m} className="px-3 py-3 text-[10px] font-semibold text-stone-500 uppercase tracking-wider text-right border-b border-stone-200">{m}</th>
                         ))}
+                        <th className="w-10 border-b border-stone-200" />
                       </tr>
                     </thead>
                     <tbody>
                       {comp.rows.map((row, ri) => (
                         <tr key={ri} className={ri % 2 ? "bg-stone-50/40" : "bg-white"}>
                           <td className={`px-4 py-3 border-b border-stone-100 text-xs text-stone-800 ${row.name.startsWith("*") ? "font-semibold text-emerald-800" : ""}`}>
-                            {row.name}
+                            <div className="flex items-center gap-2">
+                              <EC val={row.name} wide onSave={(v: string) => updCompName(gid, ri, v)} />
+                            </div>
                           </td>
                           {row.v.map((val, mi) => (
                             <td 
                               key={mi} 
                               className="px-3 py-3 border-b border-stone-100 text-xs text-right font-medium"
-                              style={{ color: val ? cmpColor(val, gid) : "#d6d3d1" }}
                             >
-                              {val ? fmtR(val) : "—"}
+                              <EC
+                                val={val ?? ""}
+                                type="number"
+                                right
+                                bold
+                                color={val ? cmpColor(val, gid) : "#a8a29e"}
+                                display={val ? fmtR(val) : "—"}
+                                onSave={(v: number) => updCompVal(gid, ri, mi, v)}
+                              />
                             </td>
                           ))}
+                          <td className="px-2 py-3 border-b border-stone-100 text-right">
+                            <BtnDel onClick={() => delComp(gid, ri)} />
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
+                </div>
+                <div className="px-5 pb-4">
+                  <BtnAdd onClick={() => addComp(gid)} label={lang === "pt" ? "Adicionar concorrente" : "Add competitor"} />
                 </div>
                 {comp.note && (
                   <p className="text-[10px] text-stone-400 bg-stone-50/50 px-5 py-2.5 border-t border-stone-100 italic">
