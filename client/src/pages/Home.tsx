@@ -28,7 +28,7 @@ const I18N = {
     rHint: "Clique em qualquer valor pontilhado para editar. Preços de canal recalculam automaticamente.",
     floor: "Piso NET", minNights: "Min. Diárias", net: "NET", direct: "PIX / Direto",
     disc: "Desc.", auth: "Autorização", group: "Grupo",
-    compNote: "Fonte: Booking.com 2026.", compLegend: "Verde = abaixo média NET · Vermelho = acima.",
+    compNote: "Fonte: Booking.com 2027 (janeiro a dezembro).", compLegend: "Verde = abaixo média NET · Vermelho = acima.",
     visual: "Visual", editMode: "Editar",
     legend: "Legenda:", holidayDot: "= feriado (passe o mouse para ver)",
     rangesTitle: "Faixas de Temporada", holidaysTitle: "Feriados e Datas Especiais",
@@ -65,10 +65,10 @@ const I18N = {
     grpLabels: {A:"Grupo A — Vilas Premium", B:"Grupo B — Upper-Mid", C:"Grupo C — Suítes", D:"Grupo D — Apartamentos"},
     grpDescs: {A:"Lion & Panhard", B:"Niros & Ventana", C:"19 quartos", D:"7 unidades"},
     compCol: "Concorrente",
-    compMonths: ["Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"],
+    compMonths: ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"],
     discAll: "Todos", discRestricted: "Restrito",
     discAuth1: "Daniele / Equipe Comercial", discAuth2: "Aprovação Débora", discAuth3: "Gestão (Débora + CB)",
-    compLabels: {A:"Grupo A — Vilas Lion & Panhard (Booking.com 2026)", B:"Grupo B — Vilas Niros & Ventana (Booking.com 2026)", C:"Grupo C — Suítes (Booking.com 2026)", D:"Grupo D — Apartamentos (Booking.com 2026)"},
+    compLabels: {A:"Grupo A — Vilas Lion & Panhard (Booking.com 2027)", B:"Grupo B — Vilas Niros & Ventana (Booking.com 2027)", C:"Grupo C — Suítes (Booking.com 2027)", D:"Grupo D — Apartamentos (Booking.com 2027)"},
     compNotes: {A:"* Villa Mandi inclui serviços completos justificando preço superior.", B:"Preços por noite (vila completa).", C:"Superior = nível Master · Inferior = nível Deluxe.", D:"Produto raro — raridade justifica precificação confiante."},
     calcTitle: "Como é feito o cálculo do tarifário",
     calcMethod: "Anteriormente, o cálculo do tarifário era realizado com base nos valores praticados no ano anterior e na análise da concorrência. O novo tarifário foi desenvolvido a partir de um estudo mais aprofundado, considerando os custos operacionais, o levantamento do valor mínimo viável para comercialização de cada acomodação, além de uma nova análise comparativa de mercado e concorrentes. Com base nesses dados, análises e comparações, os novos valores foram definidos e sugeridos.",
@@ -81,7 +81,7 @@ const I18N = {
     rHint: "Click any dashed value to edit. Channel prices recalculate automatically.",
     floor: "NET Floor", minNights: "Min. Nights", net: "NET", direct: "PIX / Direct",
     disc: "Disc.", auth: "Authorization", group: "Group",
-    compNote: "Source: Booking.com 2026.", compLegend: "Green = below Aldeia NET avg · Red = above.",
+    compNote: "Source: Booking.com 2027 (January to December).", compLegend: "Green = below Aldeia NET avg · Red = above.",
     visual: "Visual", editMode: "Edit",
     legend: "Legend:", holidayDot: "= holiday (hover to see)",
     rangesTitle: "Season Ranges", holidaysTitle: "Holidays & Special Dates",
@@ -118,10 +118,10 @@ const I18N = {
     grpLabels: {A:"Group A — Premium Villas", B:"Group B — Upper-Mid Villas", C:"Group C — Suites", D:"Group D — Apartments"},
     grpDescs: {A:"Lion & Panhard", B:"Niros & Ventana", C:"19 rooms", D:"7 units"},
     compCol: "Competitor",
-    compMonths: ["Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    compMonths: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
     discAll: "All", discRestricted: "Restricted",
     discAuth1: "Daniele / Sales Team", discAuth2: "Débora Approval", discAuth3: "Management (Débora + CB)",
-    compLabels: {A:"Group A — Villas Lion & Panhard (Booking.com 2026)", B:"Group B — Villas Niros & Ventana (Booking.com 2026)", C:"Group C — Suites (Booking.com 2026)", D:"Group D — Apartments (Booking.com 2026)"},
+    compLabels: {A:"Group A — Villas Lion & Panhard (Booking.com 2027)", B:"Group B — Villas Niros & Ventana (Booking.com 2027)", C:"Group C — Suites (Booking.com 2027)", D:"Group D — Apartments (Booking.com 2027)"},
     compNotes: {A:"* Villa Mandi includes full services (chef, staff) justifying higher price.", B:"Prices per night (full villa).", C:"Upper rows = Master/Balcony level · Lower = Deluxe level.", D:"Rare product — scarcity justifies confident pricing."},
     calcTitle: "How is the rate sheet calculated",
     calcMethod: "Previously, the rate sheet calculation was based on prices charged in the previous year and competitor analysis. The new rate sheet was developed from a more in-depth study, considering operational costs, the assessment of the minimum viable value for commercializing each accommodation, plus a new comparative market and competitor analysis. Based on this data, analyses and comparisons, the new values were defined and suggested.",
@@ -359,45 +359,45 @@ const GROUPS = {
 
 const COMPETITORS = {
   A: {
-    label: "Grupo A — Vilas Lion & Panhard (Booking.com 2026)",
+    label: "Grupo A — Vilas Lion & Panhard (Booking.com 2027)",
     note: "* Villa Mandi inclui serviços completos justificando preço superior.",
     rows: [
-      { name: "Vila Alala Jeri", v: [2288, 1741, 1857, 2263, 3598, 3830, 3646, 3819, 3646, 3646] },
-      { name: "Villa Odara", v: [2595, 2595, 2595, 2595, 6095, 6795, 6095, 3995, 3995, 5500] },
-      { name: "Casa Jerian", v: [null, null, 6900, 6900, 7500, 8100, 6900, 6900, 6900, 6900] },
-      { name: "Villa Florens", v: [null, null, 7500, 7500, null, 4986, 4986, 4986, 4986, 4986] },
-      { name: "*Villa Mandi", v: [10400, 11600, 10530, 10530, 13500, 13500, 15720, 15720, 15720, 15720] },
+      { name: "Vila Alala Jeri", v: [null, null, 2288, 1741, 1857, 2263, 3598, 3830, 3646, 3819, 3646, 3646] },
+      { name: "Villa Odara", v: [null, null, 2595, 2595, 2595, 2595, 6095, 6795, 6095, 3995, 3995, 5500] },
+      { name: "Casa Jerian", v: [null, null, null, null, 6900, 6900, 7500, 8100, 6900, 6900, 6900, 6900] },
+      { name: "Villa Florens", v: [null, null, null, null, 7500, 7500, null, 4986, 4986, 4986, 4986, 4986] },
+      { name: "*Villa Mandi", v: [null, null, 10400, 11600, 10530, 10530, 13500, 13500, 15720, 15720, 15720, 15720] },
     ]
   },
   B: {
-    label: "Grupo B — Vilas Niros & Ventana (Booking.com 2026)",
+    label: "Grupo B — Vilas Niros & Ventana (Booking.com 2027)",
     note: "Preços por noite (vila completa).",
     rows: [
-      { name: "Villa Alegria – La Villa Grp", v: [5223, 5223, 5223, 5223, 8705, 8705, 6499, 5223, 5223, 5223] },
-      { name: "Villa Messina Jeri", v: [2200, 1500, 1500, 1915, 3073, 3500, 2700, 2700, 2700, 2700] },
-      { name: "Villa Luz do Mar", v: [2123, 2256, 2256, 2628, null, null, 3353, null, null, null] },
-      { name: "Vila Jehol", v: [null, null, null, 2000, 4000, null, null, 4400, 4400, 5000] },
+      { name: "Villa Alegria – La Villa Grp", v: [null, null, 5223, 5223, 5223, 5223, 8705, 8705, 6499, 5223, 5223, 5223] },
+      { name: "Villa Messina Jeri", v: [null, null, 2200, 1500, 1500, 1915, 3073, 3500, 2700, 2700, 2700, 2700] },
+      { name: "Villa Luz do Mar", v: [null, null, 2123, 2256, 2256, 2628, null, null, 3353, null, null, null] },
+      { name: "Vila Jehol", v: [null, null, null, null, null, 2000, 4000, null, null, 4400, 4400, 5000] },
     ]
   },
   C: {
-    label: "Grupo C — Suítes (Booking.com 2026)",
+    label: "Grupo C — Suítes (Booking.com 2027)",
     note: "Superior = nível Master · Inferior = nível Deluxe.",
     rows: [
-      { name: "Villa Mango Jeri (Master)", v: [null, 669, 713, 713, 968, 1320, null, null, null, null] },
-      { name: "Villa Nautica (Master)", v: [648, 683, 648, 702, 918, 1026, 810, 810, 810, 810] },
-      { name: "Café Jeri Hotel (Master)", v: [659, 726, 674, 726, 726, 1112, 978, 978, 978, 978] },
-      { name: "Villa Tapi (Master)", v: [753, 753, 762, 782, 869, 1265, 975, 975, 975, 975] },
-      { name: "Vila Kalango (Deluxe)", v: [1258, 1258, 1258, 1258, 2484, null, 2484, 2484, 2484, 2484] },
-      { name: "Villa Florens (Deluxe)", v: [900, 900, 900, 1296, 1022, null, 900, 900, 900, 900] },
-      { name: "*Villa Mandi (Deluxe)", v: [2600, 2900, 2633, 2633, 3375, null, 3930, 3930, 3930, 3930] },
+      { name: "Villa Mango Jeri (Master)", v: [null, null, null, 669, 713, 713, 968, 1320, null, null, null, null] },
+      { name: "Villa Nautica (Master)", v: [null, null, 648, 683, 648, 702, 918, 1026, 810, 810, 810, 810] },
+      { name: "Café Jeri Hotel (Master)", v: [null, null, 659, 726, 674, 726, 726, 1112, 978, 978, 978, 978] },
+      { name: "Villa Tapi (Master)", v: [null, null, 753, 753, 762, 782, 869, 1265, 975, 975, 975, 975] },
+      { name: "Vila Kalango (Deluxe)", v: [null, null, 1258, 1258, 1258, 1258, 2484, null, 2484, 2484, 2484, 2484] },
+      { name: "Villa Florens (Deluxe)", v: [null, null, 900, 900, 900, 1296, 1022, null, 900, 900, 900, 900] },
+      { name: "*Villa Mandi (Deluxe)", v: [null, null, 2600, 2900, 2633, 2633, 3375, null, 3930, 3930, 3930, 3930] },
     ]
   },
   D: {
-    label: "Grupo D — Apartamentos (Booking.com 2026)",
+    label: "Grupo D — Apartamentos (Booking.com 2027)",
     note: "Produto raro — raridade justifica precificação confiante.",
     rows: [
-      { name: "CasaLô Hotel", v: [483, 483, 483, 483, 544, 877, null, null, 727, 727] },
-      { name: "Blue Residence", v: [590, 590, 590, 590, 1089, 1089, null, null, null, null] },
+      { name: "CasaLô Hotel", v: [null, null, 483, 483, 483, 483, 544, 877, null, null, 727, 727] },
+      { name: "Blue Residence", v: [null, null, 590, 590, 590, 590, 1089, 1089, null, null, null, null] },
     ]
   },
 };
@@ -751,7 +751,14 @@ export default function Home() {
     if (d.holidays) setHolidays(d.holidays);
     if (d.discountRules) setDiscountRules(d.discountRules);
     if (d.noDiscountRules) setNoDiscountRules(d.noDiscountRules);
-    if (d.competitors) setCompetitors(d.competitors);
+    if (d.competitors) {
+      const fix = (v: (number | null)[]) => v.length === 10 ? [null, null, ...v] : v.length < 12 ? [...v, ...Array(12 - v.length).fill(null)] : v;
+      const migrated: CompData = {};
+      Object.entries(d.competitors as CompData).forEach(([gid, g]) => {
+        migrated[gid] = { ...g, rows: g.rows.map((r) => ({ ...r, v: fix(r.v) })) };
+      });
+      setCompetitors(migrated);
+    }
     if (d.lang) setLang(d.lang);
   };
 
@@ -885,7 +892,7 @@ export default function Home() {
   const addComp = (gid: string) => {
     setCompetitors((c) => ({
       ...c,
-      [gid]: { ...c[gid], rows: [...c[gid].rows, { name: lang === "pt" ? "Novo concorrente" : "New competitor", v: Array(10).fill(null) }] }
+      [gid]: { ...c[gid], rows: [...c[gid].rows, { name: lang === "pt" ? "Novo concorrente" : "New competitor", v: Array(12).fill(null) }] }
     }));
   };
 
@@ -1157,7 +1164,7 @@ export default function Home() {
                 </div>
                 
                 <div className="overflow-x-auto">
-                  <table className="w-full border-collapse min-w-[640px]">
+                  <table className="w-full border-collapse min-w-[800px]">
                     <thead>
                       <tr className="bg-stone-50/50">
                         <th className="px-4 py-3 text-[10px] font-semibold text-stone-500 uppercase tracking-wider text-left border-b border-stone-200">{T.compCol}</th>
